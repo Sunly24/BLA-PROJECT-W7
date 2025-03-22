@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
 import '../../model/ride/ride_pref.dart';
 import '../../repository/ride_preferences_repository.dart';
+import 'async_value.dart';
 
 class RidePreferencesProvider extends ChangeNotifier {
   RidePreference? _currentPreference;
 
-  List<RidePreference> _pastPreferences = [];
+  late AsyncValue<List<RidePreference>> pastPreferences;
 
   final RidePreferencesRepository repository;
+
+  void _fetchPastPreferences() async {
+    // 1- Handle loading
+    pastPreferences = AsyncValue.loading();
+    notifyListeners();
+    try {
+      // 2 Fetch data
+      List<RidePreference> pastPrefs = await repository.getPastPreferences();
+      // 3 Handle success
+      pastPreferences = AsyncValue.success(pastPrefs);
+      // 4 Handle error
+    } catch (error) {
+      pastPreferences = AsyncValue.error(error);
+    }
+    notifyListeners();
+  }
 
   RidePreferencesProvider({required this.repository}) {
     // For now past preferences are fetched only 1 time
     // Your code
-    _pastPreferences = repository.getPastPreferences();
+    _fetchPastPreferences();
   }
 
   RidePreference? get currentPreference => _currentPreference;
@@ -26,15 +43,15 @@ class RidePreferencesProvider extends ChangeNotifier {
     }
   }
 
-  void addPastPreference(RidePreference preference) {
+  void addPastPreference(RidePreference preference) async {
     // Your code
-    if (!_pastPreferences.contains(preference)) {
-      _pastPreferences.add(preference);
-      repository.addPreference(preference);
+    if (!pastPreferences.data!.contains(preference)) {
+      pastPreferences.data!.add(preference);
+      await repository.addPreference(preference);
     }
   }
 
   // History is returned from newest to oldest preference
   List<RidePreference> get preferencesHistory =>
-      _pastPreferences.reversed.toList();
+      pastPreferences.data!.reversed.toList();
 }

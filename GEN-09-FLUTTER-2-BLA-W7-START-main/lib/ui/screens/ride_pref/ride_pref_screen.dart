@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../model/ride/ride_pref.dart';
 import '../../providers/ride_prefs_provider.dart';
+import '../../providers/async_value.dart';
 import '../../theme/theme.dart';
 
 import '../../../utils/animations_util.dart';
@@ -32,7 +33,7 @@ class RidePrefScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<RidePreferencesProvider>();
     final currentRidePreference = provider.currentPreference;
-    final pastPreferences = provider.preferencesHistory;
+    final pastPreferences = provider.pastPreferences;
 
     return Stack(
       children: [
@@ -66,19 +67,10 @@ class RidePrefScreen extends StatelessWidget {
                   ),
                   SizedBox(height: BlaSpacings.m),
 
-                  // 2.2 Optionally display a list of past preferences
+                  // 2.2 Handle different states of past preferences
                   SizedBox(
-                    height: 200, // Set a fixed height
-                    child: ListView.builder(
-                      shrinkWrap: true, // Fix ListView height issue
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemCount: pastPreferences.length,
-                      itemBuilder: (ctx, index) => RidePrefHistoryTile(
-                        ridePref: pastPreferences[index],
-                        onPressed: () =>
-                            onRidePrefSelected(context, pastPreferences[index]),
-                      ),
-                    ),
+                    height: 200,
+                    child: _buildPastPreferencesList(pastPreferences, context),
                   ),
                 ],
               ),
@@ -87,6 +79,37 @@ class RidePrefScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildPastPreferencesList(
+      AsyncValue<List<RidePreference>> pastPreferences, BuildContext context) {
+    switch (pastPreferences.state) {
+      case AsyncValueState.loading:
+        return Center(
+          child: Text(
+            'Loading...',
+            style: TextStyle(color: BlaColors.textLight),
+          ),
+        );
+      case AsyncValueState.error:
+        return Center(
+          child: Text(
+            'No connection. Try later',
+            style: TextStyle(color: BlaColors.textLight),
+          ),
+        );
+      case AsyncValueState.success:
+        final preferences = pastPreferences.data!;
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: preferences.length,
+          itemBuilder: (ctx, index) => RidePrefHistoryTile(
+            ridePref: preferences[index],
+            onPressed: () => onRidePrefSelected(context, preferences[index]),
+          ),
+        );
+    }
   }
 }
 
