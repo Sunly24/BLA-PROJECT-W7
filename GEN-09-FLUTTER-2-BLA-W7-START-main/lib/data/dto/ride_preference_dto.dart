@@ -1,53 +1,33 @@
-import '../../model/location/locations.dart';
-import '../../model/ride/ride_pref.dart';
-import 'location_dto.dart';
+import 'package:week_3_blabla_project/data/dto/location_dto.dart';
+import 'package:week_3_blabla_project/model/ride/ride_pref.dart';
 
 class RidePreferenceDto {
-  final Location departure;
-  final DateTime departureDate;
-  final Location arrival;
-  final int requestedSeats;
-
-  RidePreferenceDto({
-    required this.departure,
-    required this.departureDate,
-    required this.arrival,
-    required this.requestedSeats,
-  });
-
-  factory RidePreferenceDto.fromJson(Map<String, dynamic> json) {
-    return RidePreferenceDto(
-      departure: LocationDto.fromJson(json['departure']),
-      departureDate: DateTime.parse(json['departureDate']),
-      arrival: LocationDto.fromJson(json['arrival']),
-      requestedSeats: json['requestedSeats'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
+  // Static method to convert domain model to JSON
+  static Map<String, dynamic> toJson(RidePreference model) {
     return {
-      'departure': LocationDto.toJson(departure),
-      'departureDate': departureDate.toIso8601String(),
-      'arrival': LocationDto.toJson(arrival),
-      'requestedSeats': requestedSeats,
+      'departure': {
+        'name': model.departure.name,
+        'country': model.departure.country.name,
+      },
+      'departureDate': model.departureDate.toIso8601String(),
+      'arrival': {
+        'name': model.arrival.name,
+        'country': model.arrival.country.name,
+      },
+      'requestedSeats': model.requestedSeats,
     };
   }
 
-  factory RidePreferenceDto.fromDomain(RidePreference preference) {
-    return RidePreferenceDto(
-      departure: preference.departure,
-      departureDate: preference.departureDate,
-      arrival: preference.arrival,
-      requestedSeats: preference.requestedSeats,
-    );
-  }
+  // Static method to convert JSON to domain model
+  static RidePreference fromJson(Map<String, dynamic> json) {
+    final departureJson = json['departure'] as Map<String, dynamic>;
+    final arrivalJson = json['arrival'] as Map<String, dynamic>;
 
-  RidePreference toDomain() {
     return RidePreference(
-      departure: departure,
-      departureDate: departureDate,
-      arrival: arrival,
-      requestedSeats: requestedSeats,
+      departure: LocationDto.fromJson(departureJson),
+      departureDate: DateTime.parse(json['departureDate']),
+      arrival: LocationDto.fromJson(arrivalJson),
+      requestedSeats: json['requestedSeats'],
     );
   }
 }

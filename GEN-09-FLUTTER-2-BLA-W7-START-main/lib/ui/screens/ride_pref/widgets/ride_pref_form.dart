@@ -6,7 +6,7 @@ import '../../../theme/theme.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/date_time_util.dart';
 import '../../../widgets/actions/bla_button.dart';
-import '../../../widgets/display/bla_divider.dart';
+import '../../../widgets/errors/display/bla_divider.dart';
 import '../../../widgets/inputs/bla_location_picker.dart';
 import 'ride_pref_input_tile.dart';
 

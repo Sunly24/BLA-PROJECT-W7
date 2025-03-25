@@ -83,6 +83,7 @@ class RidePrefScreen extends StatelessWidget {
 
   Widget _buildPastPreferencesList(
       AsyncValue<List<RidePreference>> pastPreferences, BuildContext context) {
+    final provider = context.read<RidePreferencesProvider>();
     switch (pastPreferences.state) {
       case AsyncValueState.loading:
         return Center(
@@ -99,7 +100,7 @@ class RidePrefScreen extends StatelessWidget {
           ),
         );
       case AsyncValueState.success:
-        final preferences = pastPreferences.data!;
+        List<RidePreference> preferences = provider.preferencesHistory;
         return ListView.builder(
           shrinkWrap: true,
           physics: const AlwaysScrollableScrollPhysics(),

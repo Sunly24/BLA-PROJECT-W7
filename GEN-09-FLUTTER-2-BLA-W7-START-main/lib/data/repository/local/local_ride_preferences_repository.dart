@@ -9,39 +9,46 @@ import '../../repository/ride_preferences_repository.dart';
 class LocalRidePreferencesRepository extends RidePreferencesRepository {
   static const String _preferencesKey = "ride_preferences";
 
-  final SharedPreferences prefs;
-
-  LocalRidePreferencesRepository({required this.prefs});
-
   @override
   Future<List<RidePreference>> getPastPreferences() async {
-    // Get SharedPreferences instance
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      // Get SharedPreferences instance
+      final prefs = await SharedPreferences.getInstance();
 
-    // Get the string list form the key
-    final prefsList = prefs.getStringList(_preferencesKey) ?? [];
-    // Convert the string list to a list of RidePreferences – Using map()
-    // Convert the string list to a list of RidePreferences – Using map()
-    return prefsList
-        .map((json) => RidePreferenceDto.fromJson(jsonDecode(json)).toDomain())
-        .toList();
+      // Get the string list form the key
+      final prefsList = prefs.getStringList(_preferencesKey) ?? [];
+      // Convert the string list to a list of RidePreferences – Using map()
+      return prefsList
+          .map((json) => RidePreferenceDto.fromJson(jsonDecode(json)))
+          .toList();
+    } catch (e) {
+      // Handle any errors that might occur
+      print("Error getting past preferences: $e");
+      return [];
+    }
   }
 
   @override
   Future<void> addPreference(RidePreference preference) async {
-    // Call getPastPreferences()
-    final preferences = await getPastPreferences();
+    try {
+      final prefs = await SharedPreferences.getInstance();
 
-    // Add the new preference to the list
-    preferences.add(preference);
+      // Call getPastPreferences()
+      final preferences = await getPastPreferences();
 
-    // Save the new list as a string list
-    await prefs.setStringList(
-      _preferencesKey,
-      preferences
-          .map(
-              (pref) => jsonEncode(RidePreferenceDto.fromDomain(pref).toJson()))
-          .toList(),
-    );
+      // Add the new preference to the list
+      preferences.add(preference);
+
+      // Save the new list as a string list
+      await prefs.setStringList(
+        _preferencesKey,
+        preferences
+            .map((pref) => jsonEncode(RidePreferenceDto.toJson(pref)))
+            .toList(),
+      );
+    } catch (e) {
+      // Handle any errors that might occur
+      print("Error adding preference: $e");
+    }
   }
 }
