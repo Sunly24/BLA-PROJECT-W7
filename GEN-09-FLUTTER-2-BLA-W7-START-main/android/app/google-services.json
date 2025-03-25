@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "355375508768",
+    "project_id": "blablacar-f21cc",
+    "storage_bucket": "blablacar-f21cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355375508768:android:4507445a16513e7fa93b45",
+        "android_client_info": {
+          "package_name": "com.example.week_3_blabla_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEf4hIe1hooPHqL-HOnCuuRk24_ms9tmg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
